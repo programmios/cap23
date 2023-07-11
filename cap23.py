@@ -65,26 +65,31 @@ command = input('Enter the command: ')
 
 
 def split_string(command):
-    # پیدا کردن اولین اسپیس در رشته
-    first_space_index = command.find(' ')
-    # پیدا کردن اولین کاما در رشته
-    first_comma_index = command.find(',')
+    if ',' in command:
+        # پیدا کردن اولین اسپیس در رشته
+        first_space_index = command.find(' ')
+        # پیدا کردن اولین کاما در رشته
+        first_comma_index = command.find(',')
 
-    # جدا کردن قسمت‌های مختلف رشته
-    x = command[:first_space_index]
-    key1 = command[first_space_index + 1:first_comma_index]
-    key2 = command[first_comma_index + 1:]
+        # جدا کردن قسمت‌های مختلف رشته
+        x = command[:first_space_index]
+        key1 = command[first_space_index + 1:first_comma_index]
+        key2 = command[first_comma_index + 1:]
 
-    # بررسی و تبدیل key2 به مبنای دو اگر شامل اعداد بود
-    if key2.isdigit():
-        binary_key2 = bin(int(key2))[2:].zfill(8)
-        key2 = binary_key2
+        # بررسی و تبدیل key2 به مبنای دو اگر شامل اعداد بود
+        if key2.isdigit():
+            binary_key2 = bin(int(key2))[2:].zfill(8)
+            key2 = binary_key2
 
-    # برگرداندن متغیرهای جداگانه
-    return x, key1, key2
+        # برگرداندن متغیرهای جداگانه
+        return x, key1, key2
+    else:
+        return None, None, None
 
 
 x, key1, key2 = split_string(command)
+
+
 opcode = get_opcode(command)
 # print(opcode)
 
@@ -94,38 +99,52 @@ reg_dict = {'$0': 0, 'd0': 1, 'd1': 2, 'd2': 3, 'd3': 4,
             'sr': 9, 'ba': 10, 'pc': 11
             }
 
-
-value = reg_dict.get(key1)  # دریافت مقدار متناظر با کلید ورودی
-if value is not None:
-    bin_value = bin(value)[2:].zfill(4)
-    rd = bin_value
-    # print(rd)
-# else:
-    # در صورتی که کلید ورودی معتبر نباشد، پیام خطای مناسب چاپ می‌شود
-    # print('Invalid input')
-
-
-# command3 = input('Enter the rs: ')
-value = reg_dict.get(key2)
-if key2.isdigit():
-    binary_key2 = bin(int(key2))[2:].zfill(8)
-    rs = binary_key2
-else:
-    value = reg_dict.get(key2)  # دریافت مقدار متناظر با کلید ورودی
+if (x is not None and key1 is not None and key2 is not None):
+    value = reg_dict.get(key1)  # دریافت مقدار متناظر با کلید ورودی
     if value is not None:
         bin_value = bin(value)[2:].zfill(4)
-        rs = bin_value
-#     print(rs)
-# else:
-#     # در صورتی که کلید ورودی معتبر نباشد، پیام خطای مناسب چاپ می‌شود
-#     print('Invalid input')
+        rd = bin_value
+        # print(rd)
+    # else:
+        # در صورتی که کلید ورودی معتبر نباشد، پیام خطای مناسب چاپ می‌شود
+        # print('Invalid input')
 
-if len(rs) == 4:
-    nop = bin(random.randint(0, 15))[2:].zfill(4)
-else:
-    nop = ""
-if nop == "":
-    concatenated = str(opcode) + str(rd) + str(key2)
-else:
-    concatenated = str(opcode) + str(rd) + str(rs) + str(nop)
+    # command3 = input('Enter the rs: ')
+    value = reg_dict.get(key2)
+    if key2.isdigit():
+        binary_key2 = bin(int(key2))[2:].zfill(8)
+        rs = binary_key2
+    else:
+        value = reg_dict.get(key2)  # دریافت مقدار متناظر با کلید ورودی
+        if value is not None:
+            bin_value = bin(value)[2:].zfill(4)
+            rs = bin_value
+    #     print(rs)
+    # else:
+    #     # در صورتی که کلید ورودی معتبر نباشد، پیام خطای مناسب چاپ می‌شود
+    #     print('Invalid input')
+
+    if len(rs) == 4:
+        nop = bin(random.randint(0, 15))[2:].zfill(4)
+    else:
+        nop = ""
+    if nop == "":
+        concatenated = str(opcode) + str(rd) + str(key2)
+    else:
+        concatenated = str(opcode) + str(rd) + str(rs) + str(nop)
+
+
+def split_string2(string):
+    first_space_index = string.find(' ')
+    key3 = string[:first_space_index]
+    key4 = string[first_space_index + 1:]
+    return key3, key4
+
+
+if (x is None and key1 is None and key2 is None):
+    key3, key4 = split_string2(command)
+    key4 = bin(int(key4))[2:].zfill(12)
+    if (key3 != None and key4 != None):
+        concatenated = str(opcode) + str(key4)
+
 print("machine code is: " + concatenated)
